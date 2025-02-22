@@ -71,7 +71,7 @@ Some of the key visualizations include:
 This project was completed as part of my **Python final project** at **UC Berkeley Extension**. Special thanks to WHO for providing open-access data on NTDs.
 
 ## Connect with Me
-If you're interested in global health, data analytics, or responsible AI, feel free to reach out!
+If you're interested in global health, or data analytics, feel free to reach out!
 - **LinkedIn:** [Adelie Plumasseau](https://www.linkedin.com/in/adelie-plumasseau/)
 
 ---
