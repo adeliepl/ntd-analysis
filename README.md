@@ -17,8 +17,8 @@ This project follows a structured data analysis approach:
    - Handling missing values and duplicates.
    - Converting necessary columns to numerical format.
 2. **Exploratory Data Analysis (EDA):**
-   - Statistical analysis (mean, median, mode, range, standard deviation).
-   - Trend analysis of NTD cases over time.
+   - Statistical analysis to understand key trends in NTD cases.
+   - Identifying extreme values, central tendencies, and distributions.
 3. **Geographic Disparity Analysis:**
    - Identifying top and bottom countries based on NTD prevalence.
    - Visualizing case distribution across regions.
@@ -27,16 +27,16 @@ This project follows a structured data analysis approach:
    - Bar charts ranking countries by case counts.
 
 ## Key Findings
-- The **NTD case range** varies drastically, from 0 to **147,555,654 cases** in a single region.
+- The **NTD case range** varies drastically, highlighting disparities across regions..
 - A **gradual decline in NTD cases** in recent years suggests the impact of healthcare interventions.
 - Stark **geographic disparities** highlight the need for targeted strategies in highly affected regions.
-- The most common recorded case count was **zero**, indicating that many areas successfully reduced or eliminated NTDs.
+- The integration of key WHO events into trend analysis provides insights into major policy impacts..
 
 ## How to Run the Analysis
 ### Prerequisites
 Ensure you have Python and the following libraries installed:
 ```bash
-pip install pandas numpy matplotlib
+pip install pandas numpy matplotlib seaborn
 ```
 
 ### Running the Script
@@ -50,18 +50,18 @@ pip install pandas numpy matplotlib
    ```
 3. Run the Python script:
    ```bash
-   python main.py
+   python main_v2.py
    ```
 
 ## Results & Visuals
 Some of the key visualizations include:
-- **Trend of NTD Cases (2010-2021)** – A line graph showcasing the overall decline.
+- **Trend of NTD Cases (2010-2021) with Key WHO Events** – A line graph showcasing major global interventions and disruptions.
 - **Top & Bottom Countries by NTD Cases** – Bar charts illustrating disparity in burden.
 
 ## Future Work
 - Integrate **socio-economic factors** to better understand NTD prevalence.
 - Apply **machine learning models** to predict future NTD trends.
-- Expand the dataset to include **intervention program effectiveness**.
+- Integrate interactive dashboards for better data exploration..
 
 ## References
 - [WHO NTD Data](https://www.who.int/data/gho/data/themes/neglected-tropical-diseases)
