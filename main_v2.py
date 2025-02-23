@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
+import scipy.stats as stats
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -46,23 +47,75 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     """
     # Drop empty columns
     df = df.dropna(axis=1, how="all")
-    
-    # Convert 'Value' column (formatted numbers) to int
+
+    # Convert 'Value' column (formatted numbers) to numeric
     if "Value" in df.columns:
-        df["Value"] = (
-            df["Value"]
-            .astype(str)
-            .str.replace("\u202f", "")
-            .str.replace("\xa0", "")
-            .str.replace(",", "")
-        )
+        df["Value"] = df["Value"].astype(str).str.replace(r"[^\d.]", "", regex=True)
         df["Value"] = pd.to_numeric(df["Value"], errors="coerce")
-    
+
     # Ensure 'FactValueNumeric' is numeric
     if "FactValueNumeric" in df.columns:
         df["FactValueNumeric"] = pd.to_numeric(df["FactValueNumeric"], errors="coerce")
-    
+
     return df
+
+
+def perform_statistical_analysis(df, column="FactValueNumeric"):
+    """
+    Performs statistical analysis on the dataset.
+
+    Parameters:
+    - df: pd.DataFrame, cleaned dataset
+    - column: str, the column containing NTD case counts
+
+    Returns:
+    - Prints statistical results
+    """
+
+    if column not in df.columns:
+        logging.error("❌ Column '%s' not found in dataset.", column)
+        return
+
+    # Basic Descriptive Statistics
+    mean_value = df[column].mean()
+    median_value = df[column].median()
+    mode_value = df[column].mode()[0] if not df[column].mode().empty else "No mode"
+    std_dev = df[column].std()
+    skewness = stats.skew(df[column], nan_policy='omit')
+    kurtosis = stats.kurtosis(df[column], nan_policy='omit')
+    min_value = df[column].min()
+    max_value = df[column].max()
+
+    # Correlation with Period (Year)
+    if "Period" in df.columns:
+        df.loc[:, "Period"] = pd.to_numeric(df["Period"], errors="coerce")
+        correlation = df[[column, "Period"]].corr().iloc[0, 1]
+    else:
+        correlation = "N/A"
+
+    # Print results properly formatted
+    print("\n📊 **Statistical Analysis Report** 📊")
+    print(f"✅ Mean: {mean_value:,.2f}")
+    print(f"✅ Median: {median_value:,.2f}")
+    print(f"✅ Mode: {mode_value}")
+    print(f"✅ Standard Deviation: {std_dev:,.2f}")
+    print(f"✅ Skewness: {skewness:.2f} (Distribution shape)")
+    print(f"✅ Kurtosis: {kurtosis:.2f} (Tail heaviness)")
+    print(f"✅ Minimum: {min_value:,.2f}")
+    print(f"✅ Maximum: {max_value:,.2f}")
+    print(f"✅ Correlation with Time (Period): {correlation:.2f}\n")
+
+    return {
+        "Mean": mean_value,
+        "Median": median_value,
+        "Mode": mode_value,
+        "Standard Deviation": std_dev,
+        "Skewness": skewness,
+        "Kurtosis": kurtosis,
+        "Minimum": min_value,
+        "Maximum": max_value,
+        "Correlation with Time": correlation
+    }
 
 def visualize_top_countries(df: pd.DataFrame, column: str = "FactValueNumeric", top_n: int = 10):
     """
@@ -88,6 +141,7 @@ def visualize_top_countries(df: pd.DataFrame, column: str = "FactValueNumeric", 
         x=ranked_df.values, 
         y=ranked_df.index, 
         palette="magma_r",  # A warm, professional gradient
+        hue=ranked_df.index, 
         edgecolor="black"
     )
 
@@ -115,18 +169,15 @@ def visualize_top_countries(df: pd.DataFrame, column: str = "FactValueNumeric", 
     plt.show()
 
 if __name__ == "__main__":
-    # File path (to be provided by the user or modified accordingly)
     file_path = "data.csv"
-    
-    # Load dataset
     df = load_data(file_path)
     
     if df is not None:
-        # Clean dataset
         df_clean = clean_dataset(df)
-        
-        # Visualize top 10 countries requiring treatment
-        visualize_top_countries(df_clean)
+
+        # Perform Statistical Analysis and Print Results 📊
+        print("\n🔍 Running Statistical Analysis...\n")
+        stats_results = perform_statistical_analysis(df_clean)
 
 # Generate Histogram for NTD Case Distribution
 def plot_histogram(df, column="FactValueNumeric"):
@@ -165,7 +216,7 @@ def plot_trends_with_improved_annotations(df, column="FactValueNumeric", time_co
     - Displays a line chart with improved annotations.
     """
     # Ensure period is numeric and sorted
-    df[time_col] = pd.to_numeric(df[time_col], errors="coerce")
+    df.loc[:, time_col] = pd.to_numeric(df[time_col], errors="coerce")
     df = df.sort_values(by=time_col)
 
     # Aggregate yearly data
@@ -207,6 +258,6 @@ def plot_trends_with_improved_annotations(df, column="FactValueNumeric", time_co
     plt.show()
 
 # Apply visualizations on the cleaned dataset
+visualize_top_countries(df_clean)
 plot_histogram(df_clean)
 plot_trends_with_improved_annotations(df_clean)
-
